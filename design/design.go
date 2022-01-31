@@ -39,10 +39,10 @@ var _ = Service("hellosvc", func() {
 		// Here the payload is an object that consists of two fields.
 		Payload(func() {
 			// Attribute describes an object field
-			Attribute("a", String, "Name", func() {
+			Attribute("name", String, "Name", func() {
 				Meta("rpc:tag", "1")
 			})
-			Required("a")
+			Required("name")
 		})
 
 		// Result describes the method result.
@@ -53,7 +53,7 @@ var _ = Service("hellosvc", func() {
 		HTTP(func() {
 			// Requests to the service consist of HTTP GET requests.
 			// The payload fields are encoded as path parameters.
-			GET("/add/{a}")
+			GET("/greet/{name}")
 			// Responses use a "200 OK" HTTP status.
 			// The result is encoded in the response body.
 			Response(StatusOK)
@@ -70,4 +70,5 @@ var _ = Service("hellosvc", func() {
 	// Serve the file gen/http/openapi3.json for requests sent to
 	// /openapi.json.
 	Files("/openapi.json", "openapi3.json")
+	Files("/openapi", "openapi3.yaml")
 })

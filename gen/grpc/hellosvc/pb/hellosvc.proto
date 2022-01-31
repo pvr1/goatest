@@ -1,0 +1,27 @@
+// Code generated with goa v3.5.4, DO NOT EDIT.
+//
+// hellosvc protocol buffer definition
+//
+// Command:
+// $ goa gen github.com/pvr1/goatest/design
+
+syntax = "proto3";
+
+package hellosvc;
+
+option go_package = "/hellosvcpb";
+
+// The hello service
+service Hellosvc {
+	// Greet implements greet.
+	rpc Greet (GreetRequest) returns (GreetResponse);
+}
+
+message GreetRequest {
+	// Name
+	string name = 1;
+}
+
+message GreetResponse {
+	string field = 1;
+}
