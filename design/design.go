@@ -69,6 +69,6 @@ var _ = Service("hellosvc", func() {
 
 	// Serve the file gen/http/openapi3.json for requests sent to
 	// /openapi.json.
-	Files("/openapi.json", "openapi3.json")
-	Files("/openapi", "openapi3.yaml")
+	Files("/openapi.json", "gen/http/openapi3.json")
+	Files("/openapi.yaml", "gen/http/openapi3.yaml")
 })

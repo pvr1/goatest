@@ -18,10 +18,10 @@ import (
 
 // Server lists the hellosvc service endpoint HTTP handlers.
 type Server struct {
-	Mounts       []*MountPoint
-	Greet        http.Handler
-	Openapi3JSON http.Handler
-	Openapi3Yaml http.Handler
+	Mounts              []*MountPoint
+	Greet               http.Handler
+	GenHTTPOpenapi3JSON http.Handler
+	GenHTTPOpenapi3Yaml http.Handler
 }
 
 // ErrorNamer is an interface implemented by generated error structs that
@@ -54,24 +54,24 @@ func New(
 	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
 	errhandler func(context.Context, http.ResponseWriter, error),
 	formatter func(err error) goahttp.Statuser,
-	fileSystemOpenapi3JSON http.FileSystem,
-	fileSystemOpenapi3Yaml http.FileSystem,
+	fileSystemGenHTTPOpenapi3JSON http.FileSystem,
+	fileSystemGenHTTPOpenapi3Yaml http.FileSystem,
 ) *Server {
-	if fileSystemOpenapi3JSON == nil {
-		fileSystemOpenapi3JSON = http.Dir(".")
+	if fileSystemGenHTTPOpenapi3JSON == nil {
+		fileSystemGenHTTPOpenapi3JSON = http.Dir(".")
 	}
-	if fileSystemOpenapi3Yaml == nil {
-		fileSystemOpenapi3Yaml = http.Dir(".")
+	if fileSystemGenHTTPOpenapi3Yaml == nil {
+		fileSystemGenHTTPOpenapi3Yaml = http.Dir(".")
 	}
 	return &Server{
 		Mounts: []*MountPoint{
 			{"Greet", "GET", "/greet/{name}"},
-			{"openapi3.json", "GET", "/openapi.json"},
-			{"openapi3.yaml", "GET", "/openapi"},
+			{"gen/http/openapi3.json", "GET", "/openapi.json"},
+			{"gen/http/openapi3.yaml", "GET", "/openapi.yaml"},
 		},
-		Greet:        NewGreetHandler(e.Greet, mux, decoder, encoder, errhandler, formatter),
-		Openapi3JSON: http.FileServer(fileSystemOpenapi3JSON),
-		Openapi3Yaml: http.FileServer(fileSystemOpenapi3Yaml),
+		Greet:               NewGreetHandler(e.Greet, mux, decoder, encoder, errhandler, formatter),
+		GenHTTPOpenapi3JSON: http.FileServer(fileSystemGenHTTPOpenapi3JSON),
+		GenHTTPOpenapi3Yaml: http.FileServer(fileSystemGenHTTPOpenapi3Yaml),
 	}
 }
 
@@ -86,8 +86,8 @@ func (s *Server) Use(m func(http.Handler) http.Handler) {
 // Mount configures the mux to serve the hellosvc endpoints.
 func Mount(mux goahttp.Muxer, h *Server) {
 	MountGreetHandler(mux, h.Greet)
-	MountOpenapi3JSON(mux, goahttp.Replace("", "/openapi3.json", h.Openapi3JSON))
-	MountOpenapi3Yaml(mux, goahttp.Replace("", "/openapi3.yaml", h.Openapi3Yaml))
+	MountGenHTTPOpenapi3JSON(mux, goahttp.Replace("", "/gen/http/openapi3.json", h.GenHTTPOpenapi3JSON))
+	MountGenHTTPOpenapi3Yaml(mux, goahttp.Replace("", "/gen/http/openapi3.yaml", h.GenHTTPOpenapi3Yaml))
 }
 
 // Mount configures the mux to serve the hellosvc endpoints.
@@ -146,13 +146,14 @@ func NewGreetHandler(
 	})
 }
 
-// MountOpenapi3JSON configures the mux to serve GET request made to
+// MountGenHTTPOpenapi3JSON configures the mux to serve GET request made to
 // "/openapi.json".
-func MountOpenapi3JSON(mux goahttp.Muxer, h http.Handler) {
+func MountGenHTTPOpenapi3JSON(mux goahttp.Muxer, h http.Handler) {
 	mux.Handle("GET", "/openapi.json", h.ServeHTTP)
 }
 
-// MountOpenapi3Yaml configures the mux to serve GET request made to "/openapi".
-func MountOpenapi3Yaml(mux goahttp.Muxer, h http.Handler) {
-	mux.Handle("GET", "/openapi", h.ServeHTTP)
+// MountGenHTTPOpenapi3Yaml configures the mux to serve GET request made to
+// "/openapi.yaml".
+func MountGenHTTPOpenapi3Yaml(mux goahttp.Muxer, h http.Handler) {
+	mux.Handle("GET", "/openapi.yaml", h.ServeHTTP)
 }

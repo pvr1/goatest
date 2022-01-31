@@ -32,12 +32,12 @@ paths:
             type: string
       schemes:
       - http
-  /openapi:
+  /openapi.json:
     get:
       tags:
       - hellosvc
-      summary: Download openapi3.yaml
-      operationId: hellosvc#/openapi
+      summary: Download gen/http/openapi3.json
+      operationId: hellosvc#/openapi.json
       responses:
         "200":
           description: File downloaded
@@ -45,12 +45,12 @@ paths:
             type: file
       schemes:
       - http
-  /openapi.json:
+  /openapi.yaml:
     get:
       tags:
       - hellosvc
-      summary: Download openapi3.json
-      operationId: hellosvc#/openapi.json
+      summary: Download gen/http/openapi3.yaml
+      operationId: hellosvc#/openapi.yaml
       responses:
         "200":
           description: File downloaded
